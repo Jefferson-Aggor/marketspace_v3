@@ -105,7 +105,7 @@ export const Navbar = () => {
       </div>
 
       {session.isLoading ? (
-        <div className="flex w-full text-muted-foreground text-sm font-light items-center justify-center">
+        <div className="flex w-50  text-muted-foreground text-sm font-light items-center justify-center">
           <Loader className="size-4 animate-spin mr-2" /> Session loading
         </div>
       ) : session.data?.user ? (

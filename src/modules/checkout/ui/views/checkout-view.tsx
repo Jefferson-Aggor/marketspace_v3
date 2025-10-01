@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { toast } from "sonner";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { InboxIcon, LoaderIcon } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from 'sonner';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { InboxIcon, LoaderIcon } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useTRPC } from "@/trpc/client";
-import { generateTenantURL } from "@/lib/utils";
+import { useTRPC } from '@/trpc/client';
+import { generateTenantURL } from '@/lib/utils';
 
-import { useCart } from "../../hooks/use-cart";
-import { CheckoutItem } from "../components/checkout-item";
-import { CheckoutSidebar } from "../components/checkout-sidebar";
-import { useCheckoutStates } from "../../hooks/use-checkout-states";
+import { useCart } from '../../hooks/use-cart';
+import { CheckoutItem } from '../components/checkout-item';
+import { CheckoutSidebar } from '../components/checkout-sidebar';
+import { useCheckoutStates } from '../../hooks/use-checkout-states';
 
 interface CheckoutViewProps {
   tenantSlug: string;
@@ -22,50 +22,53 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
   const router = useRouter();
   const [states, setStates] = useCheckoutStates();
   const { productIds, removeProduct, clearCart } = useCart(tenantSlug);
-  
+
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { data, error, isLoading } = useQuery(trpc.checkout.getProducts.queryOptions({
-    ids: productIds,
-  }));
+  const { data, error, isLoading } = useQuery(
+    trpc.checkout.getProducts.queryOptions({
+      ids: productIds,
+    })
+  );
 
-  const purchase = useMutation(trpc.checkout.purchase.mutationOptions({
-    onMutate: () => {
-      setStates({ success: false, cancel: false });
-    },
-    onSuccess: (data) => {
-      window.location.href = data.url;
-    },
-    onError: (error) => {
-      if (error.data?.code === "UNAUTHORIZED") {
-        // TODO: Modify when subdomains enabled
-        router.push("/sign-in");
-      }
+  const purchase = useMutation(
+    trpc.checkout.purchase.mutationOptions({
+      onMutate: () => {
+        setStates({ success: false, cancel: false });
+      },
+      onSuccess: (data) => {
+        window.location.href = data.url;
+      },
+      onError: (error) => {
+        if (error.data?.code === 'UNAUTHORIZED') {
+          router.push('/sign-in');
+        }
 
-      toast.error(error.message);
-    },
-  }));
+        toast.error(error.message);
+      },
+    })
+  );
 
   useEffect(() => {
     if (states.success) {
       setStates({ success: false, cancel: false });
       clearCart();
       queryClient.invalidateQueries(trpc.library.getMany.infiniteQueryFilter());
-      router.push("/library");
+      router.push('/library');
     }
   }, [
-    states.success, 
-    clearCart, 
-    router, 
+    states.success,
+    clearCart,
+    router,
     setStates,
     queryClient,
     trpc.library.getMany,
   ]);
-  
+
   useEffect(() => {
-    if (error?.data?.code === "NOT_FOUND") {
+    if (error?.data?.code === 'NOT_FOUND') {
       clearCart();
-      toast.warning("Invalid products found, cart cleared");
+      toast.warning('Invalid products found, cart cleared');
     }
   }, [error, clearCart]);
 
@@ -76,7 +79,7 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
           <LoaderIcon className="text-muted-foreground animate-spin" />
         </div>
       </div>
-    )
+    );
   }
 
   if (data?.totalDocs === 0) {
@@ -93,7 +96,6 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
   return (
     <div className="lg:pt-16 pt-4 px-4 lg:px-12">
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 lg:gap-16">
-
         <div className="lg:col-span-4">
           <div className="border rounded-md overflow-hidden bg-white">
             {data?.docs.map((product, index) => (
@@ -120,7 +122,6 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
             disabled={purchase.isPending}
           />
         </div>
-
       </div>
     </div>
   );
