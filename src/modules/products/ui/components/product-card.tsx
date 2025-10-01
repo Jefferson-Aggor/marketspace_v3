@@ -1,10 +1,10 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { StarIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { StarIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-import { formatCurrency, generateTenantURL } from "@/lib/utils";
+import { formatCurrency, generateTenantURL } from '@/lib/utils';
 
 interface ProductCardProps {
   id: string;
@@ -15,7 +15,7 @@ interface ProductCardProps {
   reviewRating: number;
   reviewCount: number;
   price: number;
-};
+}
 
 export const ProductCard = ({
   id,
@@ -43,7 +43,7 @@ export const ProductCard = ({
           <Image
             alt={name}
             fill
-            src={imageUrl || "/placeholder.png"}
+            src={imageUrl || '/placeholder.png'}
             className="object-cover"
           />
         </div>
@@ -71,15 +71,13 @@ export const ProductCard = ({
           )}
         </div>
         <div className="p-4">
-          <div className="relative px-2 py-1 border bg-pink-400 w-fit">
-            <p className="text-sm font-medium">
-              {formatCurrency(price)}
-            </p>
+          <div className="relative px-2 py-1 border bg-emerald-600 w-fit">
+            <p className="text-sm font-medium">{formatCurrency(price)}</p>
           </div>
         </div>
       </div>
     </Link>
-  )
+  );
 };
 
 export const ProductCardSkeleton = () => {
